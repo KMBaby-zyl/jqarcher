@@ -48,10 +48,14 @@
   archer.prototype.init = function(){
 
       var touchsurface = this.element[0];
-      var touchmove, touched, startX, startY, lastTouch, moved,cur,height;
-
+      var touchmove, touched, startX, startY, lastTouch, moved;
       var translate3d = has3d(),
-          orientation = 'vertical';
+          orientation = 'vertical',
+          pages = this.element.children().children().length - 1;
+          cur = 0,
+          windowHeight = $(window).height();
+
+      this.element.children().children().height(windowHeight);
 
       touchsurface.scrollTo2 = function (x, y) {
         orientation === 'vertical' ? (y = y ? (y + 'px') : 0, x = 0) : (x = x ? (x + 'px') : 0, y = 0);
@@ -66,33 +70,22 @@
       };
 
       touchsurface.swipe = function (swipedir){
-         cur = parseInt($('.homeWrp >ul')[0].className.slice(-1));
-         height = $(window).height();
-
+         windowHeight = $(window).height();
 
         if(swipedir == "up"){
-          var className = 'kmN_animate'+(cur+1);
-          $('.homeWrp > ul')[0].className = 'clearfix';
-          $('.homeWrp > ul').addClass(className);
-          touchsurface.scrollTo(0,-(cur+1)*height);
-          location.hash = cur+1;
+          cur++;
+          touchsurface.scrollTo(0,-(cur)*windowHeight);
         }else if(swipedir == "down"){
-          var className = 'kmN_animate_up'+(cur-1);
-          $('.homeWrp > ul')[0].className = 'clearfix';
-          $('.homeWrp > ul').addClass(className);
-          touchsurface.scrollTo(0,-(cur-1)*height);
-          location.hash = cur-1;
+          cur--;
+          touchsurface.scrollTo(0,-(cur)*windowHeight);
         }
       }
 
       touchsurface.back = function(){
-        cur = parseInt($('.homeWrp >ul')[0].className.slice(-1));
-        height = $(window).height();
-        touchsurface.scrollTo(0, -height * cur);
+        windowHeight = $(window).height();
+        touchsurface.scrollTo(0, -windowHeight * cur);
       }
       touchsurface.addEventListener('touchstart', function(e){
-        cur = parseInt($('.homeWrp >ul')[0].className.slice(-1));
-        height = $(window).height();
         var t;
         if (t = e.touches) { t = t[0]; } else { t = e; }
         touchmove = moved = 0;
@@ -110,13 +103,8 @@
           left = touchsurface.left = t.pageX - startX;
           top = touchsurface.top = t.pageY - startY;
 
-          if(cur==0&&top>0){
+          touchsurface.scrollTo2(left ,top - (cur*windowHeight));
 
-          }else if(cur ==3&&top < 0){
-
-          }else{
-            touchsurface.scrollTo2(left ,top - (cur*height));
-          }
           lastTouch = t;
           e.preventDefault();
         }
@@ -137,7 +125,7 @@
             if(cur == 0){ touchsurface.scrollTo(0,0); return;}
             touchsurface.swipe('down');
           }else if (v < -20) {
-            if(cur == 3){ touchsurface.scrollTo(0,-3*height); return;}
+            if(cur == pages){ touchsurface.scrollTo(0,-pages*windowHeight); return;}
             touchsurface.swipe('up');
           }else {
             touchsurface.back();

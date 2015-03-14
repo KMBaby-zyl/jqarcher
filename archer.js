@@ -3,6 +3,7 @@
 // date: 2014-10-19
 // Licensed under the MIT license
 // 移动滚屏插件，快速创建大翻页
+// 再测试下
 ;(function($,window,document,undefined){
 
   // utils to check translate3d
